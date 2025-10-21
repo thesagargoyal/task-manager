@@ -1,12 +1,14 @@
 import { useState } from 'react';
+import type { Priority } from '../types/Task';
 
 interface TaskFormProps {
-  onAddTask: (title: string, content: string) => void;
+  onAddTask: (title: string, content: string, priority: Priority) => void;
 }
 
 const TaskForm = ({ onAddTask }: TaskFormProps) => {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
+  const [priority, setPriority] = useState<Priority>('medium');
   const [errors, setErrors] = useState({ title: '', content: '' });
 
   const validate = () => {
@@ -31,9 +33,10 @@ const TaskForm = ({ onAddTask }: TaskFormProps) => {
     e.preventDefault();
 
     if (validate()) {
-      onAddTask(title.trim(), content.trim());
+      onAddTask(title.trim(), content.trim(), priority);
       setTitle('');
       setContent('');
+      setPriority('medium');
       setErrors({ title: '', content: '' });
     }
   };
@@ -109,6 +112,64 @@ const TaskForm = ({ onAddTask }: TaskFormProps) => {
             </p>
           )}
         </div>
+
+        {/* Priority Selector */}
+        <div className="group">
+          <label
+            htmlFor="priority"
+            className="block text-sm font-semibold text-gray-700 mb-2"
+          >
+            Priority Level
+          </label>
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={() => setPriority('high')}
+              className={`flex-1 py-3 px-4 rounded-lg font-semibold transition-all duration-200 transform hover:scale-[1.02]
+                ${
+                  priority === 'high'
+                    ? 'bg-red-500 text-white shadow-md ring-2 ring-red-300'
+                    : 'bg-gray-100 text-gray-700 hover:bg-red-100'
+                }`}
+            >
+              <span className="flex items-center justify-center gap-2">
+                <span>🔴</span>
+                <span>High</span>
+              </span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setPriority('medium')}
+              className={`flex-1 py-3 px-4 rounded-lg font-semibold transition-all duration-200 transform hover:scale-[1.02]
+                ${
+                  priority === 'medium'
+                    ? 'bg-yellow-500 text-white shadow-md ring-2 ring-yellow-300'
+                    : 'bg-gray-100 text-gray-700 hover:bg-yellow-100'
+                }`}
+            >
+              <span className="flex items-center justify-center gap-2">
+                <span>🟡</span>
+                <span>Medium</span>
+              </span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setPriority('low')}
+              className={`flex-1 py-3 px-4 rounded-lg font-semibold transition-all duration-200 transform hover:scale-[1.02]
+                ${
+                  priority === 'low'
+                    ? 'bg-green-500 text-white shadow-md ring-2 ring-green-300'
+                    : 'bg-gray-100 text-gray-700 hover:bg-green-100'
+                }`}
+            >
+              <span className="flex items-center justify-center gap-2">
+                <span>🟢</span>
+                <span>Low</span>
+              </span>
+            </button>
+          </div>
+        </div>
+
         <button
           type="submit"
           className="w-full bg-linear-to-r from-blue-500 to-purple-600 text-white font-semibold py-3 px-6 rounded-lg

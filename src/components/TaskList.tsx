@@ -22,10 +22,17 @@ const TaskList = ({
   onReorder,
 }: TaskListProps) => {
   const [draggedTaskId, setDraggedTaskId] = useState<string | null>(null);
+  
   const filteredTasks = tasks.filter((task) => {
     if (filter === 'active') return !task.completed;
     if (filter === 'completed') return task.completed;
     return true;
+  });
+
+  // Sort by priority: high -> medium -> low
+  const priorityOrder = { high: 0, medium: 1, low: 2 };
+  const sortedTasks = [...filteredTasks].sort((a, b) => {
+    return priorityOrder[a.priority] - priorityOrder[b.priority];
   });
 
   const stats = {
@@ -96,7 +103,7 @@ const TaskList = ({
         </div>
       ) : (
         <div className="space-y-4">
-          {filteredTasks.map((task) => (
+          {sortedTasks.map((task) => (
             <TaskItem
               key={task.id}
               task={task}

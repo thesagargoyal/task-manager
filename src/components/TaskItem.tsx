@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { Task } from '../types/Task';
 import DragHandle from './DragHandle';
+import PriorityBadge from './PriorityBadge';
 
 interface TaskItemProps {
   task: Task;
@@ -124,15 +125,18 @@ const TaskItem = ({
               >
                 {task.content}
               </p>
-              <p className="text-xs text-gray-400 mt-2">
-                {new Date(task.createdAt).toLocaleDateString('en-US', {
-                  month: 'short',
-                  day: 'numeric',
-                  year: 'numeric',
-                  hour: '2-digit',
-                  minute: '2-digit',
-                })}
-              </p>
+              <div className="flex items-center gap-2 mt-2">
+                <PriorityBadge priority={task.priority} />
+                <p className="text-xs text-gray-400">
+                  {new Date(task.createdAt).toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                  })}
+                </p>
+              </div>
             </div>
           </div>
           <div className="flex gap-2 mt-4">

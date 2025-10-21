@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import type { Task, FilterType } from './types/Task';
+import type { Task, FilterType, Priority } from './types/Task';
 import TaskForm from './components/TaskForm';
 import TaskList from './components/TaskList';
 
@@ -15,13 +15,14 @@ const App = () => {
     localStorage.setItem('tasks', JSON.stringify(tasks));
   }, [tasks]);
 
-  const handleAddTask = (title: string, content: string) => {
+  const handleAddTask = (title: string, content: string, priority: Priority) => {
     const newTask: Task = {
       id: crypto.randomUUID(),
       title,
       content,
       completed: false,
       createdAt: new Date(),
+      priority,
     };
     setTasks([newTask, ...tasks]);
   };
