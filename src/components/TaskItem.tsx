@@ -1,14 +1,28 @@
 import { useState } from 'react';
 import type { Task } from '../types/Task';
+import DragHandle from './DragHandle';
 
 interface TaskItemProps {
   task: Task;
   onToggleComplete: (id: string) => void;
   onDelete: (id: string) => void;
   onEdit: (id: string, title: string, content: string) => void;
+  onDragStart: (id: string) => void;
+  onDragOver: (id: string) => void;
+  onDragEnd: () => void;
+  isDragging?: boolean;
 }
 
-const TaskItem = ({ task, onToggleComplete, onDelete, onEdit }: TaskItemProps) => {
+const TaskItem = ({ 
+  task, 
+  onToggleComplete, 
+  onDelete, 
+  onEdit,
+  onDragStart,
+  onDragOver,
+  onDragEnd,
+  isDragging = false
+}: TaskItemProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editTitle, setEditTitle] = useState(task.title);
   const [editContent, setEditContent] = useState(task.content);
@@ -28,7 +42,16 @@ const TaskItem = ({ task, onToggleComplete, onDelete, onEdit }: TaskItemProps) =
 
   return (
     <div
-      className={"bg-white rounded-xl shadow-md p-5 transform transition-all duration-300 hover:shadow-xl hover:-translate-y-1"}
+      draggable={!isEditing}
+      onDragStart={() => onDragStart(task.id)}
+      onDragOver={(e) => {
+        e.preventDefault();
+        onDragOver(task.id);
+      }}
+      onDragEnd={onDragEnd}
+      className={`bg-white rounded-xl shadow-md p-5 transform transition-all duration-300 hover:shadow-xl hover:-translate-y-1
+        ${isDragging ? 'opacity-50 scale-95 cursor-grabbing' : 'cursor-grab'}
+        ${!isEditing ? 'hover:cursor-grab active:cursor-grabbing' : ''}`}
     >
       {isEditing ? (
         <div className="space-y-3">
@@ -64,6 +87,10 @@ const TaskItem = ({ task, onToggleComplete, onDelete, onEdit }: TaskItemProps) =
       ) : (
         <div>
           <div className="flex items-start gap-3 mb-3">
+            {/* Drag Handle */}
+            <DragHandle />
+            
+            {/* Checkbox */}
             <button
               onClick={() => onToggleComplete(task.id)}
               className="mt-1 shrink-0 w-6 h-6 rounded-full border-2 border-gray-300 flex items-center justify-center

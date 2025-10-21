@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import type { Task, FilterType } from '../types/Task';
 import TaskItem from './TaskItem';
 
@@ -8,6 +9,7 @@ interface TaskListProps {
   onToggleComplete: (id: string) => void;
   onDelete: (id: string) => void;
   onEdit: (id: string, title: string, content: string) => void;
+  onReorder: (draggedId: string, targetId: string) => void;
 }
 
 const TaskList = ({
@@ -17,7 +19,9 @@ const TaskList = ({
   onToggleComplete,
   onDelete,
   onEdit,
+  onReorder,
 }: TaskListProps) => {
+  const [draggedTaskId, setDraggedTaskId] = useState<string | null>(null);
   const filteredTasks = tasks.filter((task) => {
     if (filter === 'active') return !task.completed;
     if (filter === 'completed') return task.completed;
@@ -99,6 +103,14 @@ const TaskList = ({
               onToggleComplete={onToggleComplete}
               onDelete={onDelete}
               onEdit={onEdit}
+              onDragStart={(id) => setDraggedTaskId(id)}
+              onDragOver={(targetId) => {
+                if (draggedTaskId && draggedTaskId !== targetId) {
+                  onReorder(draggedTaskId, targetId);
+                }
+              }}
+              onDragEnd={() => setDraggedTaskId(null)}
+              isDragging={draggedTaskId === task.id}
             />
           ))}
         </div>

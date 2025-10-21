@@ -46,11 +46,24 @@ const App = () => {
     );
   };
 
+  const handleReorder = (draggedId: string, targetId: string) => {
+    const draggedIndex = tasks.findIndex((task) => task.id === draggedId);
+    const targetIndex = tasks.findIndex((task) => task.id === targetId);
+
+    if (draggedIndex === targetIndex) return;
+
+    const newTasks = [...tasks];
+    const [draggedTask] = newTasks.splice(draggedIndex, 1);
+    newTasks.splice(targetIndex, 0, draggedTask);
+
+    setTasks(newTasks);
+  };
+
   return (
     <div className="min-h-screen bg-linear-to-br from-blue-50 via-purple-50 to-pink-50">
       <div className="max-w-4xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
         <header className="text-center mb-12 pt-8">
-          <h1 className="mb-2 text-5xl sm:text-6xl font-bold text-transparent bg-clip-text bg-linear-to-r from-blue-600 via-purple-600 to-pink-600 mb-4">
+          <h1 className="mb-4 text-5xl sm:text-6xl font-bold text-transparent bg-clip-text bg-linear-to-r from-blue-600 via-purple-600 to-pink-600">
             Task Manager
           </h1>
           <p className="text-gray-600 text-lg">
@@ -66,6 +79,7 @@ const App = () => {
             onToggleComplete={handleToggleComplete}
             onDelete={handleDelete}
             onEdit={handleEdit}
+            onReorder={handleReorder}
           />
         </main>
       </div>
