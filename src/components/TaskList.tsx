@@ -22,14 +22,24 @@ const TaskList = ({
   onReorder,
 }: TaskListProps) => {
   const [draggedTaskId, setDraggedTaskId] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
   
   const filteredTasks = tasks.filter((task) => {
-    if (filter === 'active') return !task.completed;
-    if (filter === 'completed') return task.completed;
+    // Filter by status (all/active/completed)
+    if (filter === 'active' && task.completed) return false;
+    if (filter === 'completed' && !task.completed) return false;
+    
+    // Filter by search query
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      const titleMatch = task.title.toLowerCase().includes(query);
+      const contentMatch = task.content.toLowerCase().includes(query);
+      return titleMatch || contentMatch;
+    }
+    
     return true;
   });
 
-  // Sort by priority: high -> medium -> low
   const priorityOrder = { high: 0, medium: 1, low: 2 };
   const sortedTasks = [...filteredTasks].sort((a, b) => {
     return priorityOrder[a.priority] - priorityOrder[b.priority];
@@ -43,7 +53,54 @@ const TaskList = ({
 
   return (
     <div>
-      {/* Filter Tabs */}
+      <div className="bg-white rounded-xl shadow-md p-4 mb-4">
+        <div className="relative">
+          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <svg
+              className="h-5 w-5 text-gray-400"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              />
+            </svg>
+          </div>
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search tasks by title or content..."
+            className="w-full pl-10 pr-10 py-3 rounded-lg border-2 border-gray-200 focus:border-blue-500 focus:bg-blue-50/50 outline-none transition-all duration-200 placeholder:text-gray-400"
+          />
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery('')}
+              className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
+              aria-label="Clear search"
+            >
+              <svg
+                className="h-5 w-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+          )}
+        </div>
+      </div>
+
       <div className="bg-white rounded-xl shadow-md p-2 mb-6 flex gap-2">
         <button
           onClick={() => onFilterChange('all')}
@@ -80,30 +137,41 @@ const TaskList = ({
         </button>
       </div>
 
-      {/* Task List */}
       {filteredTasks.length === 0 ? (
         <div className="bg-white rounded-xl shadow-md p-12 text-center">
           <div className="text-6xl mb-4">
-            {filter === 'completed' ? '🎉' : filter === 'active' ? '📝' : '📋'}
+            {searchQuery ? '🔍' : filter === 'completed' ? '🎉' : filter === 'active' ? '📝' : '📋'}
           </div>
           <h3 className="text-xl font-bold text-gray-700 mb-2">
-            {filter === 'completed'
-              ? 'No completed tasks yet'
-              : filter === 'active'
-                ? 'No active tasks'
-                : 'No tasks yet'}
+            {searchQuery
+              ? 'No tasks found'
+              : filter === 'completed'
+                ? 'No completed tasks yet'
+                : filter === 'active'
+                  ? 'No active tasks'
+                  : 'No tasks yet'}
           </h3>
           <p className="text-gray-500">
-            {filter === 'all'
-              ? 'Create your first task to get started!'
-              : filter === 'active'
-                ? 'All tasks are completed! Great job! 🎊'
-                : 'Complete some tasks to see them here'}
+            {searchQuery
+              ? `No tasks match "${searchQuery}". Try a different search term.`
+              : filter === 'all'
+                ? 'Create your first task to get started!'
+                : filter === 'active'
+                  ? 'All tasks are completed! Great job! 🎊'
+                  : 'Complete some tasks to see them here'}
           </p>
         </div>
       ) : (
-        <div className="space-y-4">
-          {sortedTasks.map((task) => (
+        <div>
+          {searchQuery && (
+            <div className="mb-4 px-2">
+              <p className="text-sm text-gray-600">
+                Found <span className="font-semibold text-blue-600">{sortedTasks.length}</span> {sortedTasks.length === 1 ? 'task' : 'tasks'} matching "{searchQuery}"
+              </p>
+            </div>
+          )}
+          <div className="space-y-4">
+            {sortedTasks.map((task) => (
             <TaskItem
               key={task.id}
               task={task}
@@ -118,8 +186,10 @@ const TaskList = ({
               }}
               onDragEnd={() => setDraggedTaskId(null)}
               isDragging={draggedTaskId === task.id}
+              isSearchActive={!!searchQuery.trim()}
             />
           ))}
+          </div>
         </div>
       )}
     </div>

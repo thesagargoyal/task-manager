@@ -41,16 +41,13 @@
   animation: scale-in 0.3s ease-out;
 }
 
-/* Smooth scrolling */
 html {
   scroll-behavior: smooth;
 }
 
-/* Drag and Drop Styles */
 [draggable="true"] {
   user-select: none;
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
 }
-

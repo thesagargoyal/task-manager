@@ -12,6 +12,7 @@ interface TaskItemProps {
   onDragOver: (id: string) => void;
   onDragEnd: () => void;
   isDragging?: boolean;
+  isSearchActive?: boolean;
 }
 
 const TaskItem = ({ 
@@ -22,7 +23,8 @@ const TaskItem = ({
   onDragStart,
   onDragOver,
   onDragEnd,
-  isDragging = false
+  isDragging = false,
+  isSearchActive = false
 }: TaskItemProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editTitle, setEditTitle] = useState(task.title);
@@ -43,7 +45,7 @@ const TaskItem = ({
 
   return (
     <div
-      draggable={!isEditing}
+      draggable={!isEditing && !isSearchActive}
       onDragStart={() => onDragStart(task.id)}
       onDragOver={(e) => {
         e.preventDefault();
@@ -51,8 +53,8 @@ const TaskItem = ({
       }}
       onDragEnd={onDragEnd}
       className={`bg-white rounded-xl shadow-md p-5 transform transition-all duration-300 hover:shadow-xl hover:-translate-y-1
-        ${isDragging ? 'opacity-50 scale-95 cursor-grabbing' : 'cursor-grab'}
-        ${!isEditing ? 'hover:cursor-grab active:cursor-grabbing' : ''}`}
+        ${isDragging ? 'opacity-50 scale-95 cursor-grabbing' : isSearchActive ? 'cursor-default' : 'cursor-grab'}
+        ${!isEditing && !isSearchActive ? 'hover:cursor-grab active:cursor-grabbing' : ''}`}
     >
       {isEditing ? (
         <div className="space-y-3">
@@ -88,10 +90,8 @@ const TaskItem = ({
       ) : (
         <div>
           <div className="flex items-start gap-3 mb-3">
-            {/* Drag Handle */}
-            <DragHandle />
+            {!isSearchActive && <DragHandle />}
             
-            {/* Checkbox */}
             <button
               onClick={() => onToggleComplete(task.id)}
               className="mt-1 shrink-0 w-6 h-6 rounded-full border-2 border-gray-300 flex items-center justify-center

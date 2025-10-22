@@ -113,7 +113,6 @@ const TaskForm = ({ onAddTask }: TaskFormProps) => {
           )}
         </div>
 
-        {/* Priority Selector */}
         <div className="group">
           <label
             htmlFor="priority"
