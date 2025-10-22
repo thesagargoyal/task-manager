@@ -12,6 +12,7 @@ dist
 dist-ssr
 *.local
 __snapshots__
+coverage
 
 # Editor directories and files
 .vscode/*
