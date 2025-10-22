@@ -38,10 +38,10 @@ const PriorityBadge = ({ priority }: PriorityBadgeProps) => {
 
   return (
     <span
-      className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold ring-1 ${styles?.bg} ${styles?.text} ${styles?.ring}`}
+      className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold ring-1 ${styles.bg} ${styles.text} ${styles.ring}`}
     >
-      <span>{styles?.emoji}</span>
-      <span>{styles?.label}</span>
+      <span>{styles.emoji}</span>
+      <span>{styles.label}</span>
     </span>
   );
 };

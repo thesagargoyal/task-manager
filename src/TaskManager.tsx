@@ -1,9 +1,10 @@
 import { useState, useEffect, useCallback } from 'react';
+import './TaskManager.css'
 import type { Task, FilterType, Priority } from './types/Task';
 import TaskForm from './components/TaskForm';
 import TaskList from './components/TaskList';
 
-const App = () => {
+const TaskManager = () => {
   const [tasks, setTasks] = useState<Task[]>(() => {
     const savedTasks = localStorage.getItem('tasks');
     return savedTasks ? JSON.parse(savedTasks) : [];
@@ -90,4 +91,4 @@ const App = () => {
   );
 };
 
-export default App;
+export default TaskManager;
