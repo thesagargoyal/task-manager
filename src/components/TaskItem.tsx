@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, memo } from 'react';
 import type { Task } from '../types/Task';
 import DragHandle from './DragHandle';
 import PriorityBadge from './PriorityBadge';
@@ -169,4 +169,4 @@ const TaskItem = ({
   );
 };
 
-export default TaskItem;
+export default memo(TaskItem);

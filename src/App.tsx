@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import type { Task, FilterType, Priority } from './types/Task';
 import TaskForm from './components/TaskForm';
 import TaskList from './components/TaskList';
@@ -15,7 +15,7 @@ const App = () => {
     localStorage.setItem('tasks', JSON.stringify(tasks));
   }, [tasks]);
 
-  const handleAddTask = (title: string, content: string, priority: Priority) => {
+  const handleAddTask = useCallback((title: string, content: string, priority: Priority) => {
     const newTask: Task = {
       id: crypto.randomUUID(),
       title,
@@ -24,41 +24,43 @@ const App = () => {
       createdAt: new Date(),
       priority,
     };
-    setTasks([newTask, ...tasks]);
-  };
+    setTasks((prevTasks) => [newTask, ...prevTasks]);
+  }, []);
 
-  const handleToggleComplete = (id: string) => {
-    setTasks(
-      tasks.map((task) =>
+  const handleToggleComplete = useCallback((id: string) => {
+    setTasks((prevTasks) =>
+      prevTasks.map((task) =>
         task.id === id ? { ...task, completed: !task.completed } : task
       )
     );
-  };
+  }, []);
 
-  const handleDelete = (id: string) => {
-    setTasks(tasks.filter((task) => task.id !== id));
-  };
+  const handleDelete = useCallback((id: string) => {
+    setTasks((prevTasks) => prevTasks.filter((task) => task.id !== id));
+  }, []);
 
-  const handleEdit = (id: string, title: string, content: string) => {
-    setTasks(
-      tasks.map((task) =>
+  const handleEdit = useCallback((id: string, title: string, content: string) => {
+    setTasks((prevTasks) =>
+      prevTasks.map((task) =>
         task.id === id ? { ...task, title, content } : task
       )
     );
-  };
+  }, []);
 
-  const handleReorder = (draggedId: string, targetId: string) => {
-    const draggedIndex = tasks.findIndex((task) => task.id === draggedId);
-    const targetIndex = tasks.findIndex((task) => task.id === targetId);
+  const handleReorder = useCallback((draggedId: string, targetId: string) => {
+    setTasks((prevTasks) => {
+      const draggedIndex = prevTasks.findIndex((task) => task.id === draggedId);
+      const targetIndex = prevTasks.findIndex((task) => task.id === targetId);
 
-    if (draggedIndex === targetIndex) return;
+      if (draggedIndex === targetIndex) return prevTasks;
 
-    const newTasks = [...tasks];
-    const [draggedTask] = newTasks.splice(draggedIndex, 1);
-    newTasks.splice(targetIndex, 0, draggedTask);
+      const newTasks = [...prevTasks];
+      const [draggedTask] = newTasks.splice(draggedIndex, 1);
+      newTasks.splice(targetIndex, 0, draggedTask);
 
-    setTasks(newTasks);
-  };
+      return newTasks;
+    });
+  }, []);
 
   return (
     <div className="min-h-screen bg-linear-to-br from-blue-50 via-purple-50 to-pink-50">

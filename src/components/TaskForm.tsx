@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, memo } from 'react';
 import type { Priority } from '../types/Task';
 
 interface TaskFormProps {
@@ -185,4 +185,4 @@ const TaskForm = ({ onAddTask }: TaskFormProps) => {
   );
 };
 
-export default TaskForm;
+export default memo(TaskForm);

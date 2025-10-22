@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import type { Task, FilterType } from '../types/Task';
 import TaskItem from './TaskItem';
 
@@ -24,32 +24,34 @@ const TaskList = ({
   const [draggedTaskId, setDraggedTaskId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   
-  const filteredTasks = tasks.filter((task) => {
-    // Filter by status (all/active/completed)
-    if (filter === 'active' && task.completed) return false;
-    if (filter === 'completed' && !task.completed) return false;
-    
-    // Filter by search query
-    if (searchQuery.trim()) {
-      const query = searchQuery.toLowerCase();
-      const titleMatch = task.title.toLowerCase().includes(query);
-      const contentMatch = task.content.toLowerCase().includes(query);
-      return titleMatch || contentMatch;
-    }
-    
-    return true;
-  });
+  const filteredTasks = useMemo(() => {
+    return tasks.filter((task) => {
+      if (filter === 'active' && task.completed) return false;
+      if (filter === 'completed' && !task.completed) return false;
+      
+      if (searchQuery.trim()) {
+        const query = searchQuery.toLowerCase();
+        const titleMatch = task.title.toLowerCase().includes(query);
+        const contentMatch = task.content.toLowerCase().includes(query);
+        return titleMatch || contentMatch;
+      }
+      
+      return true;
+    });
+  }, [tasks, filter, searchQuery]);
 
-  const priorityOrder = { high: 0, medium: 1, low: 2 };
-  const sortedTasks = [...filteredTasks].sort((a, b) => {
-    return priorityOrder[a.priority] - priorityOrder[b.priority];
-  });
+  const sortedTasks = useMemo(() => {
+    const priorityOrder = { high: 0, medium: 1, low: 2 };
+    return [...filteredTasks].sort((a, b) => {
+      return priorityOrder[a.priority] - priorityOrder[b.priority];
+    });
+  }, [filteredTasks]);
 
-  const stats = {
+  const stats = useMemo(() => ({
     total: tasks.length,
     active: tasks.filter((t) => !t.completed).length,
     completed: tasks.filter((t) => t.completed).length,
-  };
+  }), [tasks]);
 
   return (
     <div>
